@@ -1,0 +1,16 @@
+package com.example.level_up_gamer.data
+
+import androidx.room.*
+import com.example.level_up_gamer.model.Pedido
+
+@Dao
+interface PedidoDao {
+    @Insert
+    suspend fun insertar(pedido: Pedido): Long // Retorna el ID del nuevo pedido insertado
+
+    @Update
+    suspend fun actualizar(pedido: Pedido)
+
+    @Query("SELECT * FROM Pedido WHERE usuarioId = :usuarioId ORDER BY id DESC")
+    suspend fun obtenerPedidosPorUsuario(usuarioId: Int): List<Pedido>
+}
