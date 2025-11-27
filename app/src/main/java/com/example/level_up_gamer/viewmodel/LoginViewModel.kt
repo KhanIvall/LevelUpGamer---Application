@@ -1,76 +1,52 @@
 package com.example.level_up_gamer.viewmodel
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.level_up_gamer.data.LevelUpDatabase
+import com.example.level_up_gamer.model.Usuario
+import kotlinx.coroutines.launch
 
-// --- TUS IMPORTACIONES ---
-// Asegúrate de que tus pantallas estén en el paquete ui.screens
-import com.example.level_up_gamer.ui.screens.LoginScreen
-import com.example.level_up_gamer.ui.screens.TiendaScreen
-// Asegúrate de que tus ViewModels estén en el paquete viewmodel
-import com.example.level_up_gamer.viewmodel.LoginViewModel
-import com.example.level_up_gamer.viewmodel.TiendaViewModel
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+    // Instancia de la base de datos y el DAO
+    private val database = LevelUpDatabase.getDatabase(application)
+    private val usuarioDao = database.usuarioDao()
 
-    // El NavHost gestiona el intercambio de pantallas
-    NavHost(
-        navController = navController,
-        startDestination = "login"
-    ) {
+    // LiveData para observar el resultado del login desde la Activity
+    private val _usuarioLogueado = MutableLiveData<Usuario?>()
+    val usuarioLogueado: LiveData<Usuario?> get() = _usuarioLogueado
 
-        // ---------------------------------------------------------
-        // RUTA 1: LOGIN
-        // ---------------------------------------------------------
-        composable("login") {
-            // Creamos el ViewModel aquí. Gracias a Hilt o al Factory por defecto,
-            // sobrevivirá a giros de pantalla.
-            val loginViewModel: LoginViewModel = viewModel()
+    // LiveData para mostrar errores (ej: "Contraseña incorrecta")
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
 
-            LoginScreen(
-                viewModel = loginViewModel,
-                onLoginSuccess = { usuario ->
-                    // Cuando el login es correcto, navegamos a la tienda.
-                    // Pasamos el ID del usuario en la ruta.
-                    navController.navigate("tienda/${usuario.id}") {
-                        // "popUpTo" elimina la pantalla de login del historial
-                        // para que al dar "Atrás" no vuelvas al login, sino que salgas de la app.
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-            )
+    fun login(correo: String, contrasena: String) {
+        viewModelScope.launch {
+            // Nota: Asegúrate de que tu UsuarioDao tenga un método que busque por correo y contraseña
+            // Ojo: En tu ejemplo anterior usabas 'nombre', para un e-commerce es mejor 'correo'
+            val usuario = usuarioDao.login(correo, contrasena) // Asumiendo que cambiaste el DAO a correo
+
+            if (usuario != null) {
+                _usuarioLogueado.value = usuario
+                _error.value = null
+            } else {
+                _usuarioLogueado.value = null
+                _error.value = "Credenciales incorrectas"
+            }
         }
+    }
 
-        // ---------------------------------------------------------
-        // RUTA 2: TIENDA (Recibe el ID del usuario)
-        // ---------------------------------------------------------
-        composable(
-            route = "tienda/{userId}",
-            arguments = listOf(navArgument("userId") { type = NavType.IntType })
-        ) { backStackEntry ->
+    fun registroUsuario(usuario: Usuario) {
+        viewModelScope.launch {
+            // Verificamos si ya existe el correo (opcional pero recomendado)
+            // val existe = usuarioDao.buscarPorCorreo(usuario.correo)
+            // if (existe == null) { ... }
 
-            // Recuperamos el argumento (ID del usuario) de la ruta
-            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
-
-            val tiendaViewModel: TiendaViewModel = viewModel()
-
-            // Llamamos a la pantalla de la tienda
-            TiendaScreen(
-                viewModel = tiendaViewModel,
-                usuarioId = userId,
-                onLogout = {
-                    // Si el usuario cierra sesión, volvemos al login
-                    navController.navigate("login") {
-                        popUpTo("tienda") { inclusive = true }
-                    }
-                }
-            )
+            usuarioDao.insertar(usuario)
+            // Automáticamente logueamos al usuario tras el registro
+            _usuarioLogueado.value = usuario
         }
     }
 }
