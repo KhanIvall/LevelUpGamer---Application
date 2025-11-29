@@ -20,9 +20,6 @@ import com.example.level_up_gamer.model.Producto
 import com.example.level_up_gamer.ui.components.ProductCard
 import com.example.level_up_gamer.viewmodel.TiendaViewModel
 
-// -------------------------------------------------------------------
-// 1. PANTALLA CONECTADA (Lógica)
-// -------------------------------------------------------------------
 @Composable
 fun TiendaScreen(
     viewModel: TiendaViewModel,
