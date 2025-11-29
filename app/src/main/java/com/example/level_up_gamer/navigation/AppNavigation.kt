@@ -6,8 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.level_up_gamer.ui.screen.LoginScreen
+import com.example.level_up_gamer.ui.screen.ProfileScreen
 import com.example.level_up_gamer.ui.screen.RegistroScreen
 import com.example.level_up_gamer.ui.screen.TiendaScreen
+
 
 @Composable
 fun AppNavigation() {
@@ -35,16 +37,34 @@ fun AppNavigation() {
             })
         }
 
-        composable ("tienda/{userId}") { TiendaScreen(
-            viewModel = viewModel(),
-            usuarioId = it.arguments?.getString("userId")!!.toInt(),
-            onLogout = {
-                navController.navigate("login") {
-                    popUpTo("tienda") { inclusive = true }
+        composable("tienda/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
+            TiendaScreen(
+                viewModel = viewModel(),
+                usuarioId = userId,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToProfile = {
+                    navController.navigate("profile/$userId")
                 }
-            })
+            )
         }
 
-        composable ("perfil/{userId}") {  }
+        composable("profile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
+            ProfileScreen(
+                navController = navController,
+                usuarioId = userId,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
     }
 }

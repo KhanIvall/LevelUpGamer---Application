@@ -127,7 +127,7 @@ fun RegistroContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         GamerButton(
-            text = "INICIAR PARTIDA",
+            text = "CREAR CUENTA",
             onClick = {
                 isErrorNombre = nombre.isEmpty()
                 isErrorCorreo = correo.isEmpty()
