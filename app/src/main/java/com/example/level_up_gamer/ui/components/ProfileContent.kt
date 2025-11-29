@@ -151,6 +151,15 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // Botón de editar perfil
+            GamerButton(
+                text = "EDITAR PERFIL",
+                onClick = { navController.navigate("editProfile/${usuario?.id}") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
             // Botón de cerrar sesión
             GamerButton(
                 text = "CERRAR SESIÓN",
