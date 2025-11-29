@@ -21,11 +21,19 @@ fun AppNavigation() {
             navController = navController,
             onLoginSuccess = { usuario ->
                 navController.navigate("tienda/${usuario.id}") {
-                popUpTo("login") { inclusive = true }
-            }
-        }) }
+                    popUpTo("login") { inclusive = true }
+                }
+            })
+        }
 
-        composable("registro") { RegistroScreen(navController = navController) }
+        composable("registro") { RegistroScreen(
+            navController = navController,
+            onSigninSuccess = { usuario ->
+                navController.navigate("tienda/${usuario.id}") {
+                    popUpTo("registro") { inclusive = true }
+                }
+            })
+        }
 
         composable ("tienda/{userId}") { TiendaScreen(
             viewModel = viewModel(),
@@ -34,6 +42,7 @@ fun AppNavigation() {
                 navController.navigate("login") {
                     popUpTo("tienda") { inclusive = true }
                 }
-            }) }
+            })
+        }
     }
 }

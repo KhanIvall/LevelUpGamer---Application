@@ -76,10 +76,10 @@ fun LoginContent(
                 correo = it
                 isErrorCorreo = false
             },
-            label = "Correo Gamer",
+            label = "Usuario Gamer",
             isError = isErrorCorreo
         )
-        if (isErrorCorreo) Text("Ingresa tu correo", color = Color.Red)
+        if (isErrorCorreo) Text("Ingresa tu usuario", color = Color.Red)
 
         Spacer(modifier = Modifier.height(16.dp))
 
