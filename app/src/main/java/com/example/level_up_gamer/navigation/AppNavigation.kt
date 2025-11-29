@@ -7,8 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.level_up_gamer.ui.screens.LoginScreen
-import com.example.level_up_gamer.ui.screens.TiendaScreen
+import com.example.level_up_gamer.ui.screen.LoginScreen
+import com.example.level_up_gamer.ui.screen.TiendaScreen
 import com.example.level_up_gamer.viewmodel.LoginViewModel
 import com.example.level_up_gamer.viewmodel.TiendaViewModel
 

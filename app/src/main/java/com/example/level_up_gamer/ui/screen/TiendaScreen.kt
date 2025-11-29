@@ -1,4 +1,4 @@
-package com.example.level_up_gamer.ui.screens
+package com.example.level_up_gamer.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.level_up_gamer.model.Producto
 import com.example.level_up_gamer.ui.components.ProductCard
