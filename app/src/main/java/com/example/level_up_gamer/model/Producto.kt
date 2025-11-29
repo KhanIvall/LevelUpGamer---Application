@@ -11,6 +11,6 @@ data class Producto(
     val descripcion: String,
     val precio: Double,
     val stock: Int,
-    val imagenUrl: String? = null, // URL o ruta de la imagen
-    val esVideojuego: Boolean = true // Para diferenciar entre videojuego y juego de mesa
+    val imagenUrl: String? = null,
+    val esVideojuego: Boolean = true
 )

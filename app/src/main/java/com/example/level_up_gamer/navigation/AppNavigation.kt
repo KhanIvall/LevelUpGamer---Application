@@ -44,5 +44,7 @@ fun AppNavigation() {
                 }
             })
         }
+
+        composable ("perfil/{userId}") {  }
     }
 }
