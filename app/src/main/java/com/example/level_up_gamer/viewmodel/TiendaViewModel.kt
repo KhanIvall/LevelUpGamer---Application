@@ -10,7 +10,7 @@ import com.example.level_up_gamer.model.DetallePedido
 import com.example.level_up_gamer.model.Pedido
 import com.example.level_up_gamer.model.Producto
 import kotlinx.coroutines.launch
-import java.util.Date // O usar java.time si tu API level lo permite
+import java.util.Date
 
 class TiendaViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -68,9 +68,9 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
 
     // Función final: Guarda todo en la Base de Datos
     fun confirmarCompra(usuarioId: Int) {
-        if (carritoTemporal.isEmpty())
-            return
-            viewModelScope.launch {
+        if (carritoTemporal.isEmpty()) return
+
+                viewModelScope.launch {
             // 1. Crear el Pedido (Cabecera)
             val nuevoPedido = Pedido(
                     usuarioId = usuarioId,
