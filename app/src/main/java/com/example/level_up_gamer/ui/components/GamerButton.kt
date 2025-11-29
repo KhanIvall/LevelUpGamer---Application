@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.sp
 fun GamerButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
@@ -28,7 +29,8 @@ fun GamerButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary, // Cyan Neón
             contentColor = MaterialTheme.colorScheme.onPrimary // Texto oscuro
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             text = text.uppercase(),

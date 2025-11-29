@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.level_up_gamer.ui.screen.EditProfileScreen
 import com.example.level_up_gamer.ui.screen.LoginScreen
 import com.example.level_up_gamer.ui.screen.ProfileScreen
 import com.example.level_up_gamer.ui.screen.RegistroScreen
@@ -63,6 +64,14 @@ fun AppNavigation() {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable("editProfile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
+            EditProfileScreen(
+                navController = navController,
+                usuarioId = userId
             )
         }
 
