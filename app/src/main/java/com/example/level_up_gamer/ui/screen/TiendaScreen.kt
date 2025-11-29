@@ -9,7 +9,8 @@ import com.example.level_up_gamer.viewmodel.TiendaViewModel
 fun TiendaScreen(
     viewModel: TiendaViewModel,
     usuarioId: Int,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     // 1. Observamos los datos del ViewModel
     val listaProductos by viewModel.productos.observeAsState(initial = emptyList())
@@ -30,6 +31,7 @@ fun TiendaScreen(
         onComprar = {
             viewModel.confirmarCompra(usuarioId)
         },
+        onNavigateToProfile = onNavigateToProfile,
         onLogout = onLogout
     )
 }

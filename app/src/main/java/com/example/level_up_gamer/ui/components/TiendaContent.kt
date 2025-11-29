@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -43,6 +44,7 @@ fun TiendaContent(
     totalCarrito: Double,
     onAgregar: (Producto) -> Unit,
     onComprar: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onLogout: () -> Unit
 ) {
     Scaffold(
@@ -57,6 +59,14 @@ fun TiendaContent(
                     )
                 },
                 actions = {
+                    // Botón de perfil
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     // Botón para salir
                     IconButton(onClick = onLogout) {
                         Icon(
