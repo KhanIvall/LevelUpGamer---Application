@@ -105,11 +105,11 @@ fun LoginContent(
                 type = messageType
             )
         }
-        /*
-                if (errorApi != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = errorApi, color = Color.Red)
-                }*/
+
+        if (errorApi != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = errorApi, color = Color.Red)
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
