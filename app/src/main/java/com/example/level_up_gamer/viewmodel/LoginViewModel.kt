@@ -25,7 +25,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun login(correo: String, contrasena: String) {
         viewModelScope.launch {
-            // Nota: Asegúrate de que tu UsuarioDao tenga un método que busque por correo y contraseña
             // Ojo: En tu ejemplo anterior usabas 'nombre', para un e-commerce es mejor 'correo'
             val usuario = usuarioDao.login(correo, contrasena) // Asumiendo que cambiaste el DAO a correo
 
@@ -41,9 +40,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun registroUsuario(usuario: Usuario) {
         viewModelScope.launch {
-            // Verificamos si ya existe el correo (opcional pero recomendado)
-            // val existe = usuarioDao.buscarPorCorreo(usuario.correo)
-            // if (existe == null) { ... }
 
             usuarioDao.insertar(usuario)
             // Automáticamente logueamos al usuario tras el registro
