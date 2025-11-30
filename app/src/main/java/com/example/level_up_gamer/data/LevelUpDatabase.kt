@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
         Pedido::class,
         DetallePedido::class
     ],
-    version = 2
+    version = 3
 )
 
 abstract class LevelUpDatabase: RoomDatabase() {
@@ -70,7 +70,7 @@ abstract class LevelUpDatabase: RoomDatabase() {
                     precio = 59990.0,
                     stock = 20,
                     esVideojuego = true,
-                    imagenUrl = "url_zelda"
+                    imagenResName = "zelda" // Debe coincidir con el nombre del archivo sin extensión
                 ),
                 Producto(
                     nombre = "God of War: Ragnarok",
@@ -78,7 +78,7 @@ abstract class LevelUpDatabase: RoomDatabase() {
                     precio = 64990.0,
                     stock = 15,
                     esVideojuego = true,
-                    imagenUrl = "url_gow"
+                    imagenResName = "god_of_war"
                 ),
                 // Juegos de Mesa
                 Producto(
@@ -87,7 +87,7 @@ abstract class LevelUpDatabase: RoomDatabase() {
                     precio = 35990.0,
                     stock = 10,
                     esVideojuego = false,
-                    imagenUrl = "url_catan"
+                    imagenResName = "catan" // Aquí va tu catan.jpg (sin la extensión)
                 ),
                 Producto(
                     nombre = "Dixit",
@@ -95,11 +95,12 @@ abstract class LevelUpDatabase: RoomDatabase() {
                     precio = 29990.0,
                     stock = 8,
                     esVideojuego = false,
-                    imagenUrl = "url_dixit"
+                    imagenResName = "dixit"
                 )
             )
             productos.forEach { productoDao.insertar(it) }
         }
+
     }
 
     // Clase interna para manejar el evento de creación de la BD

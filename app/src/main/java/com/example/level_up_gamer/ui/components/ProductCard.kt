@@ -1,17 +1,24 @@
 package com.example.level_up_gamer.ui.components
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.level_up_gamer.model.Producto
 
 @Composable
@@ -19,65 +26,142 @@ fun ProductCard(
     producto: Producto,
     onAgregarClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface // Gris oscuro azulado
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Placeholder para la imagen (un cuadro gris por ahora)
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(Color.Gray, shape = RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
+            // SECCIÓN SUPERIOR: Imagen + Nombre
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "IMG", color = Color.White)
-            }
+                // Imagen del producto
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Intentar cargar la imagen desde drawable
+                    if (!producto.imagenResName.isNullOrEmpty()) {
+                        val imageResId = context.resources.getIdentifier(
+                            producto.imagenResName,
+                            "drawable",
+                            context.packageName
+                        )
 
-            Spacer(modifier = Modifier.width(16.dp))
+                        if (imageResId != 0) {
+                            Image(
+                                painter = painterResource(id = imageResId),
+                                contentDescription = producto.nombre,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            // Fallback si no se encuentra la imagen
+                            Text(
+                                text = if (producto.esVideojuego) "🎮" else "🎲",
+                                style = MaterialTheme.typography.displayMedium
+                            )
+                        }
+                    } else {
+                        // Emoji por defecto si no hay imagenResName
+                        Text(
+                            text = if (producto.esVideojuego) "🎮" else "🎲",
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
+                }
 
-            // Información del Producto
-            Column(modifier = Modifier.weight(1f)) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Nombre del producto
                 Text(
                     text = producto.nombre,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Categoría
                 Text(
                     text = if (producto.esVideojuego) "Videojuego" else "Juego de Mesa",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary // Morado
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "$ ${producto.precio}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary // Cyan
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
-            // Botón de agregar pequeño
-            IconButton(
-                onClick = onAgregarClick,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
+            // SECCIÓN INFERIOR: Precio + Botón
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Agregar al carrito"
+                // Precio
+                Text(
+                    text = "$ ${producto.precio.toInt()}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Stock
+                Text(
+                    text = "Stock: ${producto.stock}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (producto.stock > 0) Color.Green else Color.Red
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Botón agregar
+                Button(
+                    onClick = onAgregarClick,
+                    enabled = producto.stock > 0,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        disabledContainerColor = Color.Gray
+                    ),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Agregar",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
             }
         }
     }
