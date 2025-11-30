@@ -34,13 +34,14 @@ fun EditProfileScreen(
         usuario = usuario,
         error = error,
         isLoading = isLoading,
-        onSaveClick = { nombre, correo, contrasenaActual, contrasenaNueva ->
+        onSaveClick = { nombre, correo, contrasenaActual, contrasenaNueva, fotoPerfil ->
             viewModel.actualizarPerfilCompleto(
                 usuarioId = usuarioId,
                 nuevoNombre = nombre,
                 nuevoCorreo = correo,
                 contrasenaActual = contrasenaActual,
-                contrasenaNueva = contrasenaNueva
+                contrasenaNueva = contrasenaNueva,
+                nuevaFotoPerfil = fotoPerfil
             )
         }
     )
