@@ -23,10 +23,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
-    fun login(correo: String, contrasena: String) {
+    fun login(nombre: String, contrasena: String) {
         viewModelScope.launch {
-            // Ojo: En tu ejemplo anterior usabas 'nombre', para un e-commerce es mejor 'correo'
-            val usuario = usuarioDao.login(correo, contrasena) // Asumiendo que cambiaste el DAO a correo
+            val usuario = usuarioDao.login(nombre, contrasena)
 
             if (usuario != null) {
                 _usuarioLogueado.value = usuario
