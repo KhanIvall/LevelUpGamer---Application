@@ -11,6 +11,6 @@ data class Producto(
     val descripcion: String,
     val precio: Double,
     val stock: Int,
-    val imagenUrl: String? = null,
+    val imagenResName: String? = null,
     val esVideojuego: Boolean = true
 )
