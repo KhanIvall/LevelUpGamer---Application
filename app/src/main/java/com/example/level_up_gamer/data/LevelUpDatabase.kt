@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
         Pedido::class,
         DetallePedido::class
     ],
-    version = 1
+    version = 2
 )
 
 abstract class LevelUpDatabase: RoomDatabase() {

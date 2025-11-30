@@ -77,14 +77,15 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Actualiza el perfil completo incluyendo opcionalmente la contraseña
+     * Actualiza el perfil completo incluyendo opcionalmente la contraseña y foto
      */
     fun actualizarPerfilCompleto(
         usuarioId: Int,
         nuevoNombre: String,
         nuevoCorreo: String,
         contrasenaActual: String,
-        contrasenaNueva: String?
+        contrasenaNueva: String?,
+        nuevaFotoPerfil: String?
     ) {
         viewModelScope.launch {
             try {
@@ -111,7 +112,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 val usuarioActualizado = usuarioActual.copy(
                     nombre = nuevoNombre,
                     correo = nuevoCorreo,
-                    contrasena = contrasenaNueva ?: usuarioActual.contrasena
+                    contrasena = contrasenaNueva ?: usuarioActual.contrasena,
+                    fotoPerfil = nuevaFotoPerfil ?: usuarioActual.fotoPerfil
                 )
 
                 usuarioDao.actualizar(usuarioActualizado)

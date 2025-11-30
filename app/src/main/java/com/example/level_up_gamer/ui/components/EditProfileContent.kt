@@ -1,26 +1,36 @@
 package com.example.level_up_gamer.ui.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.level_up_gamer.R
 import com.example.level_up_gamer.model.Usuario
+import com.example.level_up_gamer.utils.ImagePickerHelper
+import com.example.level_up_gamer.utils.rememberImagePickerLauncher
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,13 +39,16 @@ fun EditProfileContent(
     usuario: Usuario?,
     error: String?,
     isLoading: Boolean,
-    onSaveClick: (String, String, String, String?) -> Unit
+    onSaveClick: (String, String, String, String?, String?) -> Unit
 ) {
+    val context = LocalContext.current
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var contrasenaActual by remember { mutableStateOf("") }
     var contrasenaNueva by remember { mutableStateOf("") }
     var confirmarContrasena by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imagePath by remember { mutableStateOf<String?>(null) }
 
     var isErrorNombre by remember { mutableStateOf(false) }
     var isErrorCorreo by remember { mutableStateOf(false) }
@@ -48,6 +61,21 @@ fun EditProfileContent(
         usuario?.let {
             nombre = it.nombre
             correo = it.correo
+            imagePath = it.fotoPerfil
+        }
+    }
+
+    // Launcher para seleccionar imagen
+    val imagePickerLauncher = rememberImagePickerLauncher { uri ->
+        imageUri = uri
+        // Guardar la imagen en almacenamiento interno
+        usuario?.let {
+            val savedPath = ImagePickerHelper.saveImageToInternalStorage(
+                context = context,
+                sourceUri = uri,
+                userId = it.id
+            )
+            imagePath = savedPath
         }
     }
 
@@ -87,20 +115,65 @@ fun EditProfileContent(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Avatar
+            // Avatar con opción de editar
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                modifier = Modifier.size(100.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_sin_fondo),
-                    contentDescription = "Avatar",
-                    modifier = Modifier.size(60.dp)
-                )
+                // Imagen de perfil
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                        .clickable { imagePickerLauncher.launch("image/*") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (imagePath != null && File(imagePath!!).exists()) {
+                        // Mostrar imagen guardada
+                        AsyncImage(
+                            model = File(imagePath!!),
+                            contentDescription = "Foto de perfil",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // Mostrar logo por defecto
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_sin_fondo),
+                            contentDescription = "Avatar",
+                            modifier = Modifier.size(60.dp)
+                        )
+                    }
+                }
+
+                // Icono de lápiz (editar) en la esquina
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable { imagePickerLauncher.launch("image/*") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Cambiar foto",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Toca para cambiar foto",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -253,9 +326,9 @@ fun EditProfileContent(
                     // Si todo está bien, guardar
                     if (!isErrorNombre && !isErrorCorreo && !passwordsNoCoinciden) {
                         if (quiereCambiarContrasena && !isErrorContrasenaActual && !isErrorContrasenaNueva) {
-                            onSaveClick(nombre, correo, contrasenaActual, contrasenaNueva)
+                            onSaveClick(nombre, correo, contrasenaActual, contrasenaNueva, imagePath)
                         } else if (!quiereCambiarContrasena) {
-                            onSaveClick(nombre, correo, "", null)
+                            onSaveClick(nombre, correo, "", null, imagePath)
                         }
                     }
                 },
