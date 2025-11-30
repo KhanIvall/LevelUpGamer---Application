@@ -37,9 +37,9 @@ fun LoginContent(
     errorApi: String?,
     onLoginClick: (String, String) -> Unit
 ) {
-    var correo by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isErrorCorreo by remember { mutableStateOf(false) }
+    var isErrorNombre by remember { mutableStateOf(false) }
     var isErrorPassword by remember { mutableStateOf(false) }
     var showMessage by remember { mutableStateOf(false) }
     var messageType by remember { mutableStateOf(MessageType.ERROR) }
@@ -71,15 +71,15 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         CampoTextoGamer(
-            value = correo,
+            value = nombre,
             onValueChange = {
-                correo = it
-                isErrorCorreo = false
+                nombre = it
+                isErrorNombre = false
             },
             label = "Usuario Gamer",
-            isError = isErrorCorreo
+            isError = isErrorNombre
         )
-        if (isErrorCorreo) Text("Ingresa tu usuario", color = Color.Red)
+        if (isErrorNombre) Text("Ingresa tu usuario", color = Color.Red)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -116,10 +116,10 @@ fun LoginContent(
         GamerButton(
             text = "INICIAR PARTIDA",
             onClick = {
-                isErrorCorreo = correo.isEmpty()
+                isErrorNombre = nombre.isEmpty()
                 isErrorPassword = password.isEmpty()
-                if (!isErrorCorreo && !isErrorPassword) {
-                    onLoginClick(correo, password)
+                if (!isErrorNombre && !isErrorPassword) {
+                    onLoginClick(nombre, password)
                 }
             }
         )
