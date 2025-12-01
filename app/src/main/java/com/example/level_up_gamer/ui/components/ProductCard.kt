@@ -21,6 +21,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.level_up_gamer.model.Producto
 
+/**
+ * Tarjeta de UI reutilizable para mostrar un producto en el catálogo.
+ *
+ * @param producto El objeto de datos del producto a mostrar.
+ * @param onAgregarClick La acción lambda que se ejecuta cuando se pulsa el botón de agregar.
+ */
 @Composable
 fun ProductCard(
     producto: Producto,
@@ -44,12 +50,10 @@ fun ProductCard(
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // SECCIÓN SUPERIOR: Imagen + Nombre
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Imagen del producto
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -58,7 +62,7 @@ fun ProductCard(
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Intentar cargar la imagen desde drawable
+                    // Carga la imagen del producto desde los recursos drawable.
                     if (!producto.imagenResName.isNullOrEmpty()) {
                         val imageResId = context.resources.getIdentifier(
                             producto.imagenResName,
@@ -74,14 +78,12 @@ fun ProductCard(
                                 contentScale = ContentScale.Crop
                             )
                         } else {
-                            // Fallback si no se encuentra la imagen
                             Text(
                                 text = if (producto.esVideojuego) "🎮" else "🎲",
                                 style = MaterialTheme.typography.displayMedium
                             )
                         }
                     } else {
-                        // Emoji por defecto si no hay imagenResName
                         Text(
                             text = if (producto.esVideojuego) "🎮" else "🎲",
                             style = MaterialTheme.typography.displayMedium
@@ -91,7 +93,6 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Nombre del producto
                 Text(
                     text = producto.nombre,
                     style = MaterialTheme.typography.titleSmall,
@@ -105,7 +106,6 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Categoría
                 Text(
                     text = if (producto.esVideojuego) "Videojuego" else "Juego de Mesa",
                     style = MaterialTheme.typography.labelSmall,
@@ -113,12 +113,10 @@ fun ProductCard(
                 )
             }
 
-            // SECCIÓN INFERIOR: Precio + Botón
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Precio
                 Text(
                     text = "$ ${producto.precio.toInt()}",
                     style = MaterialTheme.typography.titleLarge,
@@ -128,7 +126,6 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Stock
                 Text(
                     text = "Stock: ${producto.stock}",
                     style = MaterialTheme.typography.bodySmall,
@@ -137,31 +134,12 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Botón agregar
-                Button(
+                GamerButton(
+                    text = "Agregar",
                     onClick = onAgregarClick,
                     enabled = producto.stock > 0,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        disabledContainerColor = Color.Gray
-                    ),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Agregar",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
+                    modifier = Modifier.height(40.dp)
+                )
             }
         }
     }

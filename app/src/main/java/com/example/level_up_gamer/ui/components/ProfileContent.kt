@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -68,7 +67,6 @@ fun ProfileContent(
         ) {
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Logo o avatar del usuario
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -85,7 +83,6 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Información del usuario
             when {
                 isLoading -> {
                     CircularProgressIndicator(
@@ -111,7 +108,6 @@ fun ProfileContent(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Card con información
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -151,7 +147,6 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Botón de editar perfil
             GamerButton(
                 text = "EDITAR PERFIL",
                 onClick = { navController.navigate("editProfile/${usuario?.id}") },
@@ -160,7 +155,6 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Botón de cerrar sesión
             GamerButton(
                 text = "CERRAR SESIÓN",
                 onClick = onLogout,

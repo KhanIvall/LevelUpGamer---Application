@@ -13,6 +13,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Botón de acción principal reutilizable con el estilo visual de la aplicación "LevelUp".
+ *
+ * @param text El texto que se mostrará en el botón (se convertirá a mayúsculas).
+ * @param onClick La acción lambda que se ejecutará cuando el botón sea presionado.
+ * @param modifier Modificador de Compose para personalizar el layout del botón.
+ * @param enabled Controla si el botón está activo y puede ser presionado.
+ */
 @Composable
 fun GamerButton(
     text: String,
@@ -27,8 +35,8 @@ fun GamerButton(
             .height(50.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary, // Cyan Neón
-            contentColor = MaterialTheme.colorScheme.onPrimary // Texto oscuro
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         enabled = enabled
     ) {

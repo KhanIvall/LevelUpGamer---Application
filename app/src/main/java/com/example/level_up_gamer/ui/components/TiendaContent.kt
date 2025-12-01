@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -19,8 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +35,10 @@ import com.example.level_up_gamer.model.Producto
 import java.text.NumberFormat
 import java.util.Locale
 
+/**
+ * Composable sin estado (stateless) que renderiza la interfaz de la tienda.
+ * Recibe todos los datos y callbacks necesarios para funcionar, sin contener lógica de negocio.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TiendaContent(
@@ -51,7 +51,6 @@ fun TiendaContent(
     onNavigateToCart: () -> Unit
 ) {
     Scaffold(
-        // --- BARRA SUPERIOR ---
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -89,7 +88,6 @@ fun TiendaContent(
                 )
             )
         },
-        // --- BARRA INFERIOR (TOTAL Y PAGAR) ---
         bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -105,7 +103,7 @@ fun TiendaContent(
                     Column {
                         Text("Total a Pagar:", style = MaterialTheme.typography.bodySmall)
                         Text(
-                            // CORREGIDO: Se usa NumberFormat para un formato de moneda limpio y sin decimales
+                            // Se usa NumberFormat para un formato de moneda limpio y localizado.
                             text = NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
                                 maximumFractionDigits = 0
                             }.format(totalCarrito),
@@ -123,20 +121,18 @@ fun TiendaContent(
             }
         }
     ) { paddingValues ->
-
-        // --- CONTENIDO PRINCIPAL ---
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) 
+                .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-
             if (productos.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Cargando inventario...", color = Color.Gray)
                 }
             } else {
+                // Grilla de productos que se adapta al tamaño de la pantalla.
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(16.dp),

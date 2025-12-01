@@ -56,7 +56,7 @@ fun EditProfileContent(
     var isErrorContrasenaNueva by remember { mutableStateOf(false) }
     var passwordsNoCoinciden by remember { mutableStateOf(false) }
 
-    // Cargar datos del usuario cuando estén disponibles
+    // Carga los datos del usuario en los campos del formulario cuando están disponibles.
     LaunchedEffect(usuario) {
         usuario?.let {
             nombre = it.nombre
@@ -65,10 +65,9 @@ fun EditProfileContent(
         }
     }
 
-    // Launcher para seleccionar imagen
     val imagePickerLauncher = rememberImagePickerLauncher { uri ->
         imageUri = uri
-        // Guardar la imagen en almacenamiento interno
+        // Guarda la imagen seleccionada en el almacenamiento interno para persistencia.
         usuario?.let {
             val savedPath = ImagePickerHelper.saveImageToInternalStorage(
                 context = context,
@@ -115,12 +114,10 @@ fun EditProfileContent(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Avatar con opción de editar
             Box(
                 modifier = Modifier.size(100.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Imagen de perfil
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -131,7 +128,6 @@ fun EditProfileContent(
                     contentAlignment = Alignment.Center
                 ) {
                     if (imagePath != null && File(imagePath!!).exists()) {
-                        // Mostrar imagen guardada
                         AsyncImage(
                             model = File(imagePath!!),
                             contentDescription = "Foto de perfil",
@@ -139,16 +135,14 @@ fun EditProfileContent(
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        // Mostrar logo por defecto
                         Image(
                             painter = painterResource(id = R.drawable.logo_sin_fondo),
-                            contentDescription = "Avatar",
+                            contentDescription = "Avatar por defecto",
                             modifier = Modifier.size(60.dp)
                         )
                     }
                 }
 
-                // Icono de lápiz (editar) en la esquina
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -177,7 +171,6 @@ fun EditProfileContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Formulario
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -196,7 +189,6 @@ fun EditProfileContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Campo Nombre
                     CampoTextoGamer(
                         value = nombre,
                         onValueChange = {
@@ -210,7 +202,6 @@ fun EditProfileContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Campo Correo
                     CampoTextoGamer(
                         value = correo,
                         onValueChange = {
@@ -226,7 +217,6 @@ fun EditProfileContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Card para cambiar contraseña
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -245,7 +235,6 @@ fun EditProfileContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Contraseña Actual
                     CampoTextoGamer(
                         value = contrasenaActual,
                         onValueChange = {
@@ -260,7 +249,6 @@ fun EditProfileContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Nueva Contraseña
                     CampoTextoGamer(
                         value = contrasenaNueva,
                         onValueChange = {
@@ -276,7 +264,6 @@ fun EditProfileContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Confirmar Contraseña
                     CampoTextoGamer(
                         value = confirmarContrasena,
                         onValueChange = {
@@ -302,15 +289,12 @@ fun EditProfileContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón Guardar
             GamerButton(
                 text = if (isLoading) "GUARDANDO..." else "GUARDAR CAMBIOS",
                 onClick = {
-                    // Validaciones
                     isErrorNombre = nombre.isEmpty()
                     isErrorCorreo = correo.isEmpty()
 
-                    // Si quiere cambiar contraseña, validar campos
                     val quiereCambiarContrasena = contrasenaActual.isNotEmpty() ||
                             contrasenaNueva.isNotEmpty() ||
                             confirmarContrasena.isNotEmpty()
@@ -323,7 +307,6 @@ fun EditProfileContent(
                                 confirmarContrasena.isNotEmpty()
                     }
 
-                    // Si todo está bien, guardar
                     if (!isErrorNombre && !isErrorCorreo && !passwordsNoCoinciden) {
                         if (quiereCambiarContrasena && !isErrorContrasenaActual && !isErrorContrasenaNueva) {
                             onSaveClick(nombre, correo, contrasenaActual, contrasenaNueva, imagePath)

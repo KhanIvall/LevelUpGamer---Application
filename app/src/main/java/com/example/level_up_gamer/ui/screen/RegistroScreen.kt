@@ -10,6 +10,10 @@ import com.example.level_up_gamer.model.Usuario
 import com.example.level_up_gamer.ui.components.RegistroContent
 import com.example.level_up_gamer.viewmodel.LoginViewModel
 
+/**
+ * Composable con estado (stateful) que gestiona la lógica de la pantalla de registro.
+ * Se conecta al LoginViewModel para manejar la creación y autenticación automática del usuario.
+ */
 @Composable
 fun RegistroScreen(
     navController: NavController,
@@ -20,12 +24,12 @@ fun RegistroScreen(
 
     val usuarioLogueado by viewModel.usuarioLogueado.observeAsState()
 
+    // Efecto secundario que se dispara cuando el registro y login automático son exitosos.
     LaunchedEffect(usuarioLogueado) {
-        if (usuarioLogueado != null) {
-            onSigninSuccess(usuarioLogueado!!)
-        }
+        usuarioLogueado?.let { onSigninSuccess(it) }
     }
 
+    // Se delega la renderización de la UI al composable sin estado (stateless) RegistroContent.
     RegistroContent(
         navController = navController,
         errorApi = errorApi,
@@ -33,5 +37,4 @@ fun RegistroScreen(
             viewModel.registroUsuario(usuario)
         }
     )
-
 }
