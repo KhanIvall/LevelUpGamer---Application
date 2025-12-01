@@ -1,4 +1,4 @@
-package com.example.level_up_gamer.ui.screens
+package com.example.level_up_gamer.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.level_up_gamer.model.DetallePedido
 import com.example.level_up_gamer.model.Producto
+import com.example.level_up_gamer.ui.components.ItemCarrito
 import com.example.level_up_gamer.viewmodel.CarritoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,24 +56,6 @@ fun CarritoScreen(viewModel: CarritoViewModel) { // Ya no necesita el usuarioId
                     Text(String.format("$%.2f", total), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ItemCarrito(producto: Producto, detalle: DetallePedido) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(producto.nombre, fontWeight = FontWeight.Bold)
-                Text("Cantidad: ${detalle.cantidad}")
-            }
-            Text(String.format("$%.2f", detalle.precioUnitario * detalle.cantidad))
         }
     }
 }
