@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.level_up_gamer.model.Producto
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,7 +105,10 @@ fun TiendaContent(
                     Column {
                         Text("Total a Pagar:", style = MaterialTheme.typography.bodySmall)
                         Text(
-                            text = "$ ${totalCarrito.toInt()}",
+                            // CORREGIDO: Se usa NumberFormat para un formato de moneda limpio y sin decimales
+                            text = NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+                                maximumFractionDigits = 0
+                            }.format(totalCarrito),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold

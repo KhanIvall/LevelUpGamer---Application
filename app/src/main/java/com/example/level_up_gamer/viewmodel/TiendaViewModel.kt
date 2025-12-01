@@ -19,18 +19,14 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
     private val pedidoDao = db.pedidoDao()
     private val detalleDao = db.detallePedidoDao()
 
-    // Lista de productos que se muestra en pantalla
     private val _productos = MutableLiveData<List<Producto>>()
     val productos: LiveData<List<Producto>> get() = _productos
 
-    // Carrito temporal (Lista de pares: Producto + Cantidad)
     private val carritoTemporal = mutableListOf<DetallePedido>()
 
-    // Total a pagar observable
     private val _totalCarrito = MutableLiveData(0.0)
     val totalCarrito: LiveData<Double> get() = _totalCarrito
 
-    // Mensaje de éxito al comprar
     private val _compraExitosa = MutableLiveData<Boolean>()
     val compraExitosa: LiveData<Boolean> get() = _compraExitosa
 
@@ -50,48 +46,60 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // Función para agregar un producto al "carrito" (memoria ram)
+    // CORREGIDO: Lógica para agregar productos al carrito
     fun agregarAlCarrito(producto: Producto, cantidad: Int = 1) {
-        // Creamos un objeto Detalle temporal (aún sin pedidoId real)
-        val detalle = DetallePedido(
-                pedidoId = 0, // Se asignará al confirmar la compra
-                productoId = producto.id,
-                cantidad = cantidad,
-                precioUnitario = producto.precio
-        )
-        carritoTemporal.add(detalle)
+        // Buscamos si el producto ya existe en el carrito
+        val detalleExistente = carritoTemporal.find { it.productoId == producto.id }
 
-        // Actualizamos el total
-        val totalActual = _totalCarrito.value ?: 0.0
-        _totalCarrito.value = totalActual + (producto.precio * cantidad)
+        if (detalleExistente != null) {
+            // Si existe, actualizamos su cantidad creando un objeto nuevo
+            val indice = carritoTemporal.indexOf(detalleExistente)
+            val detalleActualizado = detalleExistente.copy(cantidad = detalleExistente.cantidad + cantidad)
+            carritoTemporal[indice] = detalleActualizado
+        } else {
+            // Si no existe, creamos un nuevo detalle y lo añadimos
+            val nuevoDetalle = DetallePedido(
+                    pedidoId = 0,
+                    productoId = producto.id,
+                    cantidad = cantidad,
+                    precioUnitario = producto.precio
+            )
+            carritoTemporal.add(nuevoDetalle)
+        }
+        
+        // Recalculamos el total para asegurar la consistencia
+        recalcularTotalCarrito()
     }
 
-    // Función final: Guarda todo en la Base de Datos
+    // NUEVO: Función de ayuda para tener un cálculo del total siempre preciso
+    private fun recalcularTotalCarrito() {
+        var nuevoTotal = 0.0
+        carritoTemporal.forEach { detalle ->
+            nuevoTotal += detalle.cantidad * detalle.precioUnitario
+        }
+        _totalCarrito.value = nuevoTotal
+    }
+
     fun confirmarCompra(usuarioId: Int) {
         if (carritoTemporal.isEmpty()) return
 
                 viewModelScope.launch {
-            // 1. Crear el Pedido (Cabecera)
             val nuevoPedido = Pedido(
                     usuarioId = usuarioId,
-                    fecha = Date().toString(), // Guardamos fecha actual
+                    fecha = Date().toString(),
                     total = _totalCarrito.value ?: 0.0,
                     estado = "PAGADO"
             )
 
-            // Insertamos y obtenemos el ID generado automáticamente
             val pedidoIdLong = pedidoDao.insertar(nuevoPedido)
             val pedidoIdInt = pedidoIdLong.toInt()
 
-            // 2. Asignar ese ID a los detalles y guardarlos
             val detallesFinales = carritoTemporal.map { detalle ->
                     detalle.copy(pedidoId = pedidoIdInt)
             }
 
-            // Insertamos la lista de detalles
             detalleDao.insertarVarios(detallesFinales)
 
-            // 3. Limpiar carrito y avisar a la vista
             carritoTemporal.clear()
             _totalCarrito.value = 0.0
             _compraExitosa.value = true
