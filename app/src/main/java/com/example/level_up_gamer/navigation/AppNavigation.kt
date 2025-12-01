@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.level_up_gamer.ui.screen.CartScreen
+import com.example.level_up_gamer.ui.screen.CarritoScreen // CAMBIO: Usamos nuestra nueva pantalla
 import com.example.level_up_gamer.ui.screen.EditProfileScreen
 import com.example.level_up_gamer.ui.screen.LoginScreen
 import com.example.level_up_gamer.ui.screen.ProfileScreen
@@ -16,8 +16,6 @@ import com.example.level_up_gamer.ui.screen.TiendaScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // Definimos las rutas como constantes para evitar errores de escritura
-    // Estructura: "nombre_pantalla"
     NavHost(navController = navController, startDestination = "login") {
 
         composable ("login") { LoginScreen(
@@ -41,7 +39,7 @@ fun AppNavigation() {
         composable("tienda/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
             TiendaScreen(
-                viewModel = viewModel(),
+                tiendaViewModel = viewModel(),
                 usuarioId = userId,
                 onLogout = {
                     navController.navigate("login") {
@@ -50,6 +48,9 @@ fun AppNavigation() {
                 },
                 onNavigateToProfile = {
                     navController.navigate("profile/$userId")
+                },
+                onNavigateToCart = {
+                    navController.navigate("cart")
                 }
             )
         }
@@ -75,7 +76,8 @@ fun AppNavigation() {
             )
         }
 
-        composable("cart") { CartScreen() }
+
+        composable("cart") { CarritoScreen() }
 
     }
 }

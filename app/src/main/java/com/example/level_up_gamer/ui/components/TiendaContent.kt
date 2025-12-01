@@ -45,7 +45,8 @@ fun TiendaContent(
     onAgregar: (Producto) -> Unit,
     onComprar: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToCart: () -> Unit
 ) {
     Scaffold(
         // --- BARRA SUPERIOR ---
@@ -54,12 +55,18 @@ fun TiendaContent(
                 title = {
                     Text(
                         "TIENDA LEVEL UP",
-                        color = MaterialTheme.colorScheme.primary, // Cyan
+                        color = MaterialTheme.colorScheme.primary, 
                         fontWeight = FontWeight.Bold
                     )
                 },
                 actions = {
-                    // Botón de perfil
+                    IconButton(onClick = onNavigateToCart) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Carrito",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(onClick = onNavigateToProfile) {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -67,7 +74,6 @@ fun TiendaContent(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    // Botón para salir
                     IconButton(onClick = onLogout) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
@@ -77,7 +83,7 @@ fun TiendaContent(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background // Fondo oscuro
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
@@ -94,7 +100,6 @@ fun TiendaContent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Texto del total
                     Column {
                         Text("Total a Pagar:", style = MaterialTheme.typography.bodySmall)
                         Text(
@@ -104,40 +109,29 @@ fun TiendaContent(
                             fontWeight = FontWeight.Bold
                         )
                     }
-
-                    // Botón de Pagar
-                    Button(
+                    GamerButton(
+                        text = "PAGAR",
                         onClick = onComprar,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary // Morado
-                        ),
-                        // Solo se habilita si hay algo en el carrito (total > 0)
                         enabled = totalCarrito > 0
-                    ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("PAGAR")
-                    }
+                    )
                 }
             }
         }
     ) { paddingValues ->
 
-        // --- CONTENIDO PRINCIPAL (La Grilla) ---
+        // --- CONTENIDO PRINCIPAL ---
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Respetamos el espacio de las barras
+                .padding(paddingValues) 
                 .background(MaterialTheme.colorScheme.background)
         ) {
 
             if (productos.isEmpty()) {
-                // Mensaje si no hay datos
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Cargando inventario...", color = Color.Gray)
                 }
             } else {
-                // La Cuadrícula de productos (2 columnas)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(16.dp),

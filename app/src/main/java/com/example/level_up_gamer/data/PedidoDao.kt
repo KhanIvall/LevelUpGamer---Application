@@ -13,4 +13,7 @@ interface PedidoDao {
 
     @Query("SELECT * FROM Pedido WHERE usuarioId = :usuarioId ORDER BY id DESC")
     suspend fun obtenerPedidosPorUsuario(usuarioId: Int): List<Pedido>
+
+    @Query("SELECT * FROM Pedido WHERE usuarioId = :usuarioId AND estado = 'CARRITO' LIMIT 1")
+    suspend fun obtenerCarritoActivoPorUsuario(usuarioId: Int): Pedido?
 }

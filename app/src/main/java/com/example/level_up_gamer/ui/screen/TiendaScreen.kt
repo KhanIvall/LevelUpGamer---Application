@@ -2,36 +2,36 @@ package com.example.level_up_gamer.ui.screen
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.level_up_gamer.ui.components.TiendaContent
+import com.example.level_up_gamer.viewmodel.CarritoViewModel
 import com.example.level_up_gamer.viewmodel.TiendaViewModel
 
 @Composable
 fun TiendaScreen(
-    viewModel: TiendaViewModel,
+    tiendaViewModel: TiendaViewModel, 
+    carritoViewModel: CarritoViewModel = viewModel(), 
     usuarioId: Int,
     onLogout: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToCart: () -> Unit
 ) {
-    // 1. Observamos los datos del ViewModel
-    val listaProductos by viewModel.productos.observeAsState(initial = emptyList())
-    val totalCarrito by viewModel.totalCarrito.observeAsState(initial = 0.0)
+    val listaProductos by tiendaViewModel.productos.observeAsState(initial = emptyList())
+    val totalCarrito by carritoViewModel.total.collectAsState()
 
-    // 2. Cargamos los productos al entrar a la pantalla
     LaunchedEffect(Unit) {
-        viewModel.cargarTodosLosProductos()
+        tiendaViewModel.cargarTodosLosProductos()
     }
 
-    // 3. Llamamos al diseño puro
     TiendaContent(
         productos = listaProductos,
         totalCarrito = totalCarrito,
         onAgregar = { producto ->
-            viewModel.agregarAlCarrito(producto)
+            carritoViewModel.agregarProductoAlCarrito(producto, usuarioId)
         },
-        onComprar = {
-            viewModel.confirmarCompra(usuarioId)
-        },
+        onComprar = {},
         onNavigateToProfile = onNavigateToProfile,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onNavigateToCart = onNavigateToCart
     )
 }
