@@ -21,27 +21,36 @@ class CarritoViewModel(application: Application) : AndroidViewModel(application)
     private val _total = MutableStateFlow(0.0)
     val total: StateFlow<Double> = _total.asStateFlow()
 
-    // Este stateflow combinará los detalles con la información del producto para la UI
     private val _itemsDelCarrito = MutableStateFlow<List<Pair<Producto, DetallePedido>>>(emptyList())
     val itemsDelCarrito: StateFlow<List<Pair<Producto, DetallePedido>>> = _itemsDelCarrito.asStateFlow()
 
     /**
-     * Añade un producto al carrito del usuario activo.
+     * Carga el contenido del carrito activo de un usuario específico.
      */
+    fun cargarCarritoDelUsuario(usuarioId: Int) {
+        viewModelScope.launch {
+            // Busca el pedido que funciona como carrito activo
+            val carritoActivo = pedidoDao.obtenerCarritoActivoPorUsuario(usuarioId)
+            if (carritoActivo != null) {
+                // Si lo encuentra, carga todos sus items (productos y detalles)
+                cargarItemsDelCarrito(carritoActivo.id)
+            } else {
+                // Si no hay carrito, nos aseguramos de que la UI muestre un estado vacío
+                _itemsDelCarrito.value = emptyList()
+                _total.value = 0.0
+            }
+        }
+    }
+
     fun agregarProductoAlCarrito(producto: Producto, usuarioId: Int, cantidad: Int = 1) {
         viewModelScope.launch {
-            // 1. Buscar o crear un carrito activo para el usuario
             val carrito = obtenerOCrearCarrito(usuarioId)
-
-            // 2. Buscar si el producto ya existe en el carrito
             val detalleExistente = detallePedidoDao.obtenerDetallePorProducto(carrito.id, producto.id)
 
             if (detalleExistente != null) {
-                // 3. Si existe, crear una copia con la cantidad actualizada
                 val detalleActualizado = detalleExistente.copy(cantidad = detalleExistente.cantidad + cantidad)
                 detallePedidoDao.actualizar(detalleActualizado)
             } else {
-                // 4. Si no existe, crear un nuevo detalle
                 val nuevoDetalle = DetallePedido(
                     pedidoId = carrito.id,
                     productoId = producto.id,
@@ -50,24 +59,17 @@ class CarritoViewModel(application: Application) : AndroidViewModel(application)
                 )
                 detallePedidoDao.insertar(nuevoDetalle)
             }
-            
-            // 5. Refrescar la lista de items y el total para la UI
             cargarItemsDelCarrito(carrito.id)
         }
     }
 
-    /**
-     * Carga los items del carrito y calcula el total. 
-     * Se debe llamar cada vez que el carrito cambie.
-     */
-    fun cargarItemsDelCarrito(pedidoId: Int) {
+    private fun cargarItemsDelCarrito(pedidoId: Int) {
         viewModelScope.launch {
             val detalles = detallePedidoDao.obtenerPorPedido(pedidoId)
             var sumaTotal = 0.0
             val itemsConProducto = mutableListOf<Pair<Producto, DetallePedido>>()
 
             detalles.forEach { detalle ->
-                // Buscamos el producto completo para obtener nombre, imagen, etc.
                 productoDao.obtenerPorId(detalle.productoId)?.let { producto ->
                     itemsConProducto.add(producto to detalle)
                     sumaTotal += detalle.cantidad * detalle.precioUnitario
@@ -83,7 +85,6 @@ class CarritoViewModel(application: Application) : AndroidViewModel(application)
         if (carritoActivo != null) {
             return carritoActivo
         }
-        // Si no hay carrito, creamos uno nuevo
         val nuevoPedido = Pedido(usuarioId = usuarioId, estado = "CARRITO")
         val nuevoPedidoId = pedidoDao.insertar(nuevoPedido)
         return Pedido(id = nuevoPedidoId.toInt(), usuarioId = usuarioId, estado = "CARRITO")
