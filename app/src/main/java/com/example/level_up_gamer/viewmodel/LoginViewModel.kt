@@ -11,18 +11,19 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Instancia de la base de datos y el DAO
-    private val database = LevelUpDatabase.getDatabase(application)
-    private val usuarioDao = database.usuarioDao()
+    private val usuarioDao = LevelUpDatabase.getDatabase(application).usuarioDao()
 
-    // LiveData para observar el resultado del login desde la Activity
+    /** Expone el usuario autenticado a la UI. Null si el login falla. */
     private val _usuarioLogueado = MutableLiveData<Usuario?>()
     val usuarioLogueado: LiveData<Usuario?> get() = _usuarioLogueado
 
-    // LiveData para mostrar errores (ej: "Contraseña incorrecta")
+    /** Expone mensajes de error a la UI, como "Credenciales incorrectas". */
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
+    /**
+     * Valida las credenciales de un usuario contra la base de datos.
+     */
     fun login(nombre: String, contrasena: String) {
         viewModelScope.launch {
             val usuario = usuarioDao.login(nombre, contrasena)
@@ -37,11 +38,13 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Registra un nuevo usuario en la base de datos y lo autentica automáticamente.
+     */
     fun registroUsuario(usuario: Usuario) {
         viewModelScope.launch {
-
             usuarioDao.insertar(usuario)
-            // Automáticamente logueamos al usuario tras el registro
+            // Se establece el usuario logueado automáticamente tras el registro.
             _usuarioLogueado.value = usuario
         }
     }

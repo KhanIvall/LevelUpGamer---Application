@@ -27,5 +27,6 @@ data class DetallePedido(
     val pedidoId: Int,
     val productoId: Int,
     val cantidad: Int,
-    val precioUnitario: Double // Guardamos el precio al momento de la compra
+    /** El precio del producto al momento de realizar la compra, para registros históricos. */
+    val precioUnitario: Double 
 )

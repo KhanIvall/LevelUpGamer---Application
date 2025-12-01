@@ -18,8 +18,8 @@ import androidx.room.PrimaryKey
 data class Pedido(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val usuarioId: Int, // Clave foránea
-    val fecha: String, // Podrías usar Long para timestamps
+    val usuarioId: Int,
+    val fecha: String,
     val total: Double,
-    val estado: String = "PENDIENTE" // Ej: PENDIENTE, PAGADO, ENVIADO
+    val estado: String = "PENDIENTE"
 )

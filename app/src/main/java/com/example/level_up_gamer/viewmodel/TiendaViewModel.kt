@@ -22,6 +22,7 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
     private val _productos = MutableLiveData<List<Producto>>()
     val productos: LiveData<List<Producto>> get() = _productos
 
+    // Carrito temporal que vive solo en la memoria del ViewModel.
     private val carritoTemporal = mutableListOf<DetallePedido>()
 
     private val _totalCarrito = MutableLiveData(0.0)
@@ -46,20 +47,23 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // CORREGIDO: Lógica para agregar productos al carrito
+    /**
+     * Añade un producto al carrito temporal. 
+     * Si el producto ya existe, solo actualiza su cantidad.
+     */
     fun agregarAlCarrito(producto: Producto, cantidad: Int = 1) {
-        // Buscamos si el producto ya existe en el carrito
+        // Busca si el producto ya está en el carrito para no duplicarlo.
         val detalleExistente = carritoTemporal.find { it.productoId == producto.id }
 
         if (detalleExistente != null) {
-            // Si existe, actualizamos su cantidad creando un objeto nuevo
+            // Si existe, actualiza la cantidad creando un objeto nuevo e inmutable.
             val indice = carritoTemporal.indexOf(detalleExistente)
             val detalleActualizado = detalleExistente.copy(cantidad = detalleExistente.cantidad + cantidad)
             carritoTemporal[indice] = detalleActualizado
         } else {
-            // Si no existe, creamos un nuevo detalle y lo añadimos
+            // Si es un producto nuevo, crea el detalle y lo añade a la lista.
             val nuevoDetalle = DetallePedido(
-                    pedidoId = 0,
+                    pedidoId = 0, // ID temporal, el real se asigna al confirmar la compra.
                     productoId = producto.id,
                     cantidad = cantidad,
                     precioUnitario = producto.precio
@@ -67,11 +71,12 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
             carritoTemporal.add(nuevoDetalle)
         }
         
-        // Recalculamos el total para asegurar la consistencia
         recalcularTotalCarrito()
     }
 
-    // NUEVO: Función de ayuda para tener un cálculo del total siempre preciso
+    /**
+     * Recalcula el total iterando la lista completa para garantizar la precisión del dato.
+     */
     private fun recalcularTotalCarrito() {
         var nuevoTotal = 0.0
         carritoTemporal.forEach { detalle ->
@@ -80,10 +85,13 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
         _totalCarrito.value = nuevoTotal
     }
 
+    /**
+     * Persiste el carrito temporal en la base de datos como una orden final.
+     */
     fun confirmarCompra(usuarioId: Int) {
         if (carritoTemporal.isEmpty()) return
 
-                viewModelScope.launch {
+        viewModelScope.launch {
             val nuevoPedido = Pedido(
                     usuarioId = usuarioId,
                     fecha = Date().toString(),
@@ -91,15 +99,18 @@ class TiendaViewModel(application: Application) : AndroidViewModel(application) 
                     estado = "PAGADO"
             )
 
+            // Inserta el pedido y obtiene el ID real generado por la base de datos.
             val pedidoIdLong = pedidoDao.insertar(nuevoPedido)
             val pedidoIdInt = pedidoIdLong.toInt()
 
+            // Actualiza cada detalle con el ID del pedido real antes de guardarlos.
             val detallesFinales = carritoTemporal.map { detalle ->
                     detalle.copy(pedidoId = pedidoIdInt)
             }
 
             detalleDao.insertarVarios(detallesFinales)
 
+            // Limpia el estado temporal después de una compra exitosa.
             carritoTemporal.clear()
             _totalCarrito.value = 0.0
             _compraExitosa.value = true

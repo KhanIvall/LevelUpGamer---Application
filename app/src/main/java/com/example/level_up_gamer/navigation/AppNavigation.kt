@@ -12,28 +12,37 @@ import com.example.level_up_gamer.ui.screen.ProfileScreen
 import com.example.level_up_gamer.ui.screen.RegistroScreen
 import com.example.level_up_gamer.ui.screen.TiendaScreen
 
+/**
+ * Gestiona la navegación principal de la aplicación, definiendo todas las rutas
+ * y el paso de argumentos entre las pantallas (Composables).
+ */
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login") {
 
-        composable ("login") { LoginScreen(
-            navController = navController,
-            onLoginSuccess = { usuario ->
-                navController.navigate("tienda/${usuario.id}") {
-                    popUpTo("login") { inclusive = true }
+        composable("login") { 
+            LoginScreen(
+                navController = navController,
+                onLoginSuccess = { usuario ->
+                    navController.navigate("tienda/${usuario.id}") {
+                        // Limpia la pila de navegación para que el usuario no pueda volver al login.
+                        popUpTo("login") { inclusive = true }
+                    }
                 }
-            })
+            )
         }
 
-        composable("registro") { RegistroScreen(
-            navController = navController,
-            onSigninSuccess = { usuario ->
-                navController.navigate("tienda/${usuario.id}") {
-                    popUpTo("registro") { inclusive = true }
+        composable("registro") { 
+            RegistroScreen(
+                navController = navController,
+                onSigninSuccess = { usuario ->
+                    navController.navigate("tienda/${usuario.id}") {
+                        popUpTo("registro") { inclusive = true }
+                    }
                 }
-            })
+            )
         }
 
         composable("tienda/{userId}") { backStackEntry ->
@@ -43,16 +52,11 @@ fun AppNavigation() {
                 usuarioId = userId,
                 onLogout = {
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(0) { inclusive = true } // Limpia toda la pila de navegación.
                     }
                 },
-                onNavigateToProfile = {
-                    navController.navigate("profile/$userId")
-                },
-                onNavigateToCart = {
-                    // Ahora navegamos pasándole el ID del usuario actual
-                    navController.navigate("cart/$userId")
-                }
+                onNavigateToProfile = { navController.navigate("profile/$userId") },
+                onNavigateToCart = { navController.navigate("cart/$userId") }
             )
         }
 
@@ -77,13 +81,9 @@ fun AppNavigation() {
             )
         }
 
-        // 1. La ruta ahora espera el userId
         composable("cart/{userId}") { backStackEntry ->
-            // 2. Extraemos el userId de la ruta
             val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
-            // 3. Se lo pasamos a la CarritoScreen
             CarritoScreen(usuarioId = userId)
         }
-
     }
 }

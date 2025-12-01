@@ -22,9 +22,8 @@ import kotlinx.coroutines.launch
     ],
     version = 3
 )
-
 abstract class LevelUpDatabase: RoomDatabase() {
-    // 1. Aquí exponemos los DAOs que creamos
+
     abstract fun usuarioDao(): UsuarioDao
     abstract fun productoDao(): ProductoDao
     abstract fun pedidoDao(): PedidoDao
@@ -35,42 +34,40 @@ abstract class LevelUpDatabase: RoomDatabase() {
         private var INSTANCE: LevelUpDatabase? = null
 
         fun getDatabase(context: Context): LevelUpDatabase {
+            // Se utiliza un singleton para prevenir múltiples instancias de la BD.
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     LevelUpDatabase::class.java,
-                    "levelup_gamer.db" // 2. Nombre del archivo de base de datos
+                    "levelup_gamer.db"
                 )
                     .fallbackToDestructiveMigration()
-                    .addCallback(DatabaseCallback()) // 3. Llamamos al callback para poblar datos
+                    .addCallback(DatabaseCallback()) // Popula la BD en la primera creación.
                     .build()
                 INSTANCE = instance
                 instance
             }
         }
-
-        // 4. Función separada para limpiar el código y rellenar con datos de Videojuegos/Juegos de Mesa
-        suspend fun insertarDatosPorDefecto(db: LevelUpDatabase) {
+        
+        // Función para poblar la base de datos con datos de prueba.
+        private suspend fun insertarDatosPorDefecto(db: LevelUpDatabase) {
             val usuarioDao = db.usuarioDao()
             val productoDao = db.productoDao()
 
-            // --- Insertar Usuarios de Prueba ---
             val usuarios = listOf(
                 Usuario(nombre = "Admin", correo = "admin@levelup.com", contrasena = "admin123"),
                 Usuario(nombre = "Jugador1", correo = "player1@gmail.com", contrasena = "1234")
             )
             usuarios.forEach { usuarioDao.insertar(it) }
 
-            // --- Insertar Productos de Prueba ---
             val productos = listOf(
-                // Videojuegos
                 Producto(
                     nombre = "The Legend of Zelda: TOTK",
                     descripcion = "Una aventura épica en Hyrule.",
                     precio = 59990.0,
                     stock = 20,
                     esVideojuego = true,
-                    imagenResName = "zelda" // Debe coincidir con el nombre del archivo sin extensión
+                    imagenResName = "zelda"
                 ),
                 Producto(
                     nombre = "God of War: Ragnarok",
@@ -80,14 +77,13 @@ abstract class LevelUpDatabase: RoomDatabase() {
                     esVideojuego = true,
                     imagenResName = "god_of_war"
                 ),
-                // Juegos de Mesa
                 Producto(
                     nombre = "Catan",
                     descripcion = "El juego de estrategia y comercio.",
                     precio = 35990.0,
                     stock = 10,
                     esVideojuego = false,
-                    imagenResName = "catan" // Aquí va tu catan.jpg (sin la extensión)
+                    imagenResName = "catan"
                 ),
                 Producto(
                     nombre = "Dixit",
@@ -100,14 +96,12 @@ abstract class LevelUpDatabase: RoomDatabase() {
             )
             productos.forEach { productoDao.insertar(it) }
         }
-
     }
 
-    // Clase interna para manejar el evento de creación de la BD
+    // Callback para poblar la base de datos la primera vez que se crea.
     private class DatabaseCallback : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            // Esto asegura que la base de datos no esté vacía al iniciar
             INSTANCE?.let { database ->
                 CoroutineScope(Dispatchers.IO).launch {
                     insertarDatosPorDefecto(database)

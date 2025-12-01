@@ -20,7 +20,6 @@ interface ProductoDao {
     @Query("SELECT * FROM Producto WHERE id = :id")
     suspend fun obtenerPorId(id: Int): Producto?
 
-    // Filtro útil para tu tienda
     @Query("SELECT * FROM Producto WHERE esVideojuego = :esVideojuego")
     suspend fun obtenerPorCategoria(esVideojuego: Boolean): List<Producto>
 }

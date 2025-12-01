@@ -13,24 +13,24 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     private val usuarioDao = LevelUpDatabase.getDatabase(application).usuarioDao()
 
-    // LiveData para el usuario actual
+    /** Expone los datos del usuario actual a la UI. */
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
 
-    // LiveData para errores
+    /** Expone mensajes de error a la UI. */
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    // LiveData para estado de carga
+    /** Indica a la UI si hay una operación de carga en progreso. */
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // LiveData para indicar actualización exitosa
+    /** Notifica a la UI cuando una actualización ha sido exitosa. */
     private val _updateSuccess = MutableLiveData<Boolean>()
     val updateSuccess: LiveData<Boolean> = _updateSuccess
 
     /**
-     * Carga los datos del usuario por ID
+     * Carga los datos de un usuario específico desde la base de datos.
      */
     fun cargarUsuario(usuarioId: Int) {
         viewModelScope.launch {
@@ -39,7 +39,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 _error.value = null
 
                 val usuarioEncontrado = usuarioDao.obtenerPorId(usuarioId)
-
                 if (usuarioEncontrado != null) {
                     _usuario.value = usuarioEncontrado
                 } else {
@@ -55,29 +54,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Actualiza los datos del usuario
-     */
-    fun actualizarUsuario(usuario: Usuario) {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _error.value = null
-
-                usuarioDao.actualizar(usuario)
-                _usuario.value = usuario
-                _updateSuccess.value = true
-
-            } catch (e: Exception) {
-                _error.value = "Error al actualizar: ${e.message}"
-                _updateSuccess.value = false
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    /**
-     * Actualiza el perfil completo incluyendo opcionalmente la contraseña y foto
+     * Actualiza el perfil de un usuario con los nuevos datos proporcionados.
      */
     fun actualizarPerfilCompleto(
         usuarioId: Int,
@@ -94,13 +71,12 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 _updateSuccess.value = false
 
                 val usuarioActual = usuarioDao.obtenerPorId(usuarioId)
-
                 if (usuarioActual == null) {
                     _error.value = "Usuario no encontrado"
                     return@launch
                 }
 
-                // Si quiere cambiar contraseña, verificar la actual
+                // Si se intenta cambiar la contraseña, se debe verificar la actual por seguridad.
                 if (!contrasenaNueva.isNullOrEmpty()) {
                     if (usuarioActual.contrasena != contrasenaActual) {
                         _error.value = "La contraseña actual es incorrecta"
@@ -108,7 +84,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
 
-                // Crear usuario actualizado
+                // Se crea un nuevo objeto de usuario con los datos actualizados.
                 val usuarioActualizado = usuarioActual.copy(
                     nombre = nuevoNombre,
                     correo = nuevoCorreo,
@@ -130,7 +106,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Limpia los datos del usuario (útil al cerrar sesión)
+     * Limpia los datos de la sesión del usuario, útil al cerrar sesión.
      */
     fun limpiarDatos() {
         _usuario.value = null

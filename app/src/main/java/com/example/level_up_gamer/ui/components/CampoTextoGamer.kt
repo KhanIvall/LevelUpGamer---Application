@@ -12,12 +12,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
+/**
+ * Campo de texto reutilizable con el estilo visual de la aplicación "LevelUp".
+ *
+ * @param value El texto actual del campo.
+ * @param onValueChange La acción lambda que se ejecuta cuando el texto cambia.
+ * @param label El texto que se muestra como etiqueta del campo.
+ * @param isError Indica si el campo debe mostrar un estado de error.
+ * @param visualTransformation Transformación visual para el texto (ej. para contraseñas).
+ * @param keyboardOptions Opciones de configuración del teclado.
+ */
 @Composable
 fun CampoTextoGamer(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    isError: Boolean = false, // <--- NUEVO PARÁMETRO
+    isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
@@ -26,22 +36,16 @@ fun CampoTextoGamer(
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
-        isError = isError, // Le decimos al componente que hay un error
+        isError = isError,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-
         colors = OutlinedTextFieldDefaults.colors(
-            // Borde normal (Cyan)
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-
-            // Borde cuando isError = true (Rojo Game Over)
             errorBorderColor = Color.Red,
             errorLabelColor = Color.Red,
-
-            // Textos
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             focusedLabelColor = MaterialTheme.colorScheme.primary,

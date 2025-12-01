@@ -5,8 +5,12 @@ import com.example.level_up_gamer.model.Pedido
 
 @Dao
 interface PedidoDao {
+    /**
+     * Inserta un nuevo pedido en la base de datos.
+     * @return El ID del pedido recién insertado.
+     */
     @Insert
-    suspend fun insertar(pedido: Pedido): Long // Retorna el ID del nuevo pedido insertado
+    suspend fun insertar(pedido: Pedido): Long
 
     @Update
     suspend fun actualizar(pedido: Pedido)

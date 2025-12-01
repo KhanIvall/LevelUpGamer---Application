@@ -8,27 +8,27 @@ import com.example.level_up_gamer.model.Usuario
 import com.example.level_up_gamer.ui.components.LoginContent
 import com.example.level_up_gamer.viewmodel.LoginViewModel
 
-// 1. COMPONENTE CONECTADO (Tiene el ViewModel)
-// Este es el que llama la Navegación
+/**
+ * Composable con estado (stateful) que gestiona la lógica de la pantalla de login.
+ * Se conecta al ViewModel, observa los cambios de estado y maneja los efectos secundarios como la navegación.
+ */
 @Composable
 fun LoginScreen(
     navController: NavController,
     onLoginSuccess: (Usuario) -> Unit
 ) {
-
     val viewModel: LoginViewModel = viewModel()
 
     val errorApi by viewModel.error.observeAsState()
     val usuarioLogueado by viewModel.usuarioLogueado.observeAsState()
 
-    // Efecto secundario de navegación
+    // Efecto secundario que se dispara cuando el estado de `usuarioLogueado` cambia.
+    // Si el login es exitoso, se ejecuta la lambda de navegación.
     LaunchedEffect(usuarioLogueado) {
-        if (usuarioLogueado != null) {
-            onLoginSuccess(usuarioLogueado!!)
-        }
+        usuarioLogueado?.let { onLoginSuccess(it) }
     }
 
-    // Llamamos al diseño puro y le pasamos solo lo que necesita
+    // Se delega la renderización de la UI al composable sin estado.
     LoginContent(
         navController = navController,
         errorApi = errorApi,
