@@ -11,6 +11,7 @@ import com.example.level_up_gamer.ui.screen.LoginScreen
 import com.example.level_up_gamer.ui.screen.ProfileScreen
 import com.example.level_up_gamer.ui.screen.RegistroScreen
 import com.example.level_up_gamer.ui.screen.TiendaScreen
+import com.example.level_up_gamer.viewmodel.CarritoViewModel
 
 /**
  * Gestiona la navegación principal de la aplicación, definiendo todas las rutas
@@ -19,6 +20,9 @@ import com.example.level_up_gamer.ui.screen.TiendaScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // Se instancia el CarritoViewModel a nivel del NavHost para que sea compartido
+    // por todas las pantallas que necesiten acceder al estado del carrito.
+    val carritoViewModel: CarritoViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "login") {
 
@@ -27,7 +31,6 @@ fun AppNavigation() {
                 navController = navController,
                 onLoginSuccess = { usuario ->
                     navController.navigate("tienda/${usuario.id}") {
-                        // Limpia la pila de navegación para que el usuario no pueda volver al login.
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -49,14 +52,16 @@ fun AppNavigation() {
             val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
             TiendaScreen(
                 tiendaViewModel = viewModel(),
+                carritoViewModel = carritoViewModel, // Se inyecta el ViewModel compartido.
                 usuarioId = userId,
                 onLogout = {
+                    carritoViewModel.limpiarCarrito()
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true } // Limpia toda la pila de navegación.
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 onNavigateToProfile = { navController.navigate("profile/$userId") },
-                onNavigateToCart = { navController.navigate("cart/$userId") }
+                onNavigateToCart = { navController.navigate("cart") }
             )
         }
 
@@ -66,6 +71,7 @@ fun AppNavigation() {
                 navController = navController,
                 usuarioId = userId,
                 onLogout = {
+                    carritoViewModel.limpiarCarrito()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
                     }
@@ -81,9 +87,9 @@ fun AppNavigation() {
             )
         }
 
-        composable("cart/{userId}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
-            CarritoScreen(usuarioId = userId)
+        composable("cart") { 
+            // La pantalla del carrito recibe la misma instancia del ViewModel.
+            CarritoScreen(viewModel = carritoViewModel)
         }
     }
 }
