@@ -22,6 +22,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/NOTICE.md"
+            )
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -41,6 +51,11 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        animationsDisabled = true
+    }
+
 }
 
 dependencies {
@@ -68,4 +83,12 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.activity:activity-compose:1.8.2")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.0")
+
+    // Para usar Navigation en pruebas
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
+
+    androidTestImplementation("io.mockk:mockk-android:1.13.8")
 }
