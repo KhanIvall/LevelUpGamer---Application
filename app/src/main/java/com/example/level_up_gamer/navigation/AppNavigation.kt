@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.level_up_gamer.ui.screen.CarritoScreen
 import com.example.level_up_gamer.ui.screen.EditProfileScreen
 import com.example.level_up_gamer.ui.screen.LoginScreen
+import com.example.level_up_gamer.ui.screen.PostScreen
 import com.example.level_up_gamer.ui.screen.ProfileScreen
 import com.example.level_up_gamer.ui.screen.RegistroScreen
 import com.example.level_up_gamer.ui.screen.TiendaScreen
@@ -91,5 +92,7 @@ fun AppNavigation() {
             // La pantalla del carrito recibe la misma instancia del ViewModel.
             CarritoScreen(viewModel = carritoViewModel)
         }
+
+        composable ("posts") { PostScreen() }
     }
 }
