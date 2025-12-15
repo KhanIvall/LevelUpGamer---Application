@@ -3,6 +3,7 @@ package com.example.level_up_gamer.ui.screen
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.level_up_gamer.ui.components.TiendaContent
 import com.example.level_up_gamer.viewmodel.CarritoViewModel
 import com.example.level_up_gamer.viewmodel.TiendaViewModel
@@ -21,6 +22,7 @@ fun TiendaScreen(
     onNavigateToProfile: () -> Unit,
     onNavigateToCart: () -> Unit
 ) {
+    val navController = rememberNavController()
     // Observa el estado del catálogo de productos desde TiendaViewModel.
     val listaProductos by tiendaViewModel.productos.observeAsState(initial = emptyList())
     // Observa el estado del total del carrito desde CarritoViewModel.
@@ -42,6 +44,7 @@ fun TiendaScreen(
         onComprar = {},
         onNavigateToProfile = onNavigateToProfile,
         onLogout = onLogout,
-        onNavigateToCart = onNavigateToCart
+        onNavigateToCart = onNavigateToCart,
+        navController = navController
     )
 }
